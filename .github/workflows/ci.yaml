@@ -16,6 +16,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2  # This action checks out your repository so that the Docker image can be built
 
+    - name: Print GitHub context for tagging
+      run: |
+        if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "CI triggered by tag: ${GITHUB_REF#refs/tags/}"        
+        elif [[ "${GITHUB_REF}" == refs/heads/* ]]; then
+          TAG_NAME=${GITHUB_SHA:0:5}
+          echo "CI triggered by commit SHA (first 5 chars): ${GITHUB_SHA:0:5}"
+        fi
+        echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1  # This action sets up Docker Buildx to perform multi-platform builds
 
@@ -28,11 +39,11 @@ jobs:
         
     - name: Build the Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository }}/shop-backend:latest .  
+        docker build -t ghcr.io/${{ github.repository }}/shop-backend:$TAG_NAME .  
       env:
         CONFIG_FILE: config/action.yaml   
 
     - name: Push the Docker image to GitHub Container Registry
       run: |
-        docker push ghcr.io/${{ github.repository }}/shop-backend:latest 
+        docker push ghcr.io/${{ github.repository }}/shop-backend:$TAG_NAME 
 

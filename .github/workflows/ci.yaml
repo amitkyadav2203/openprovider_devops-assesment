@@ -23,8 +23,9 @@ jobs:
       uses: docker/login-action@v1
       with:
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}  # Uses the GitHub token to authenticate (GitHub provides this by default)
-
+        password: ${{ secrets.GITHUB_TOKEN }} 
+        registry: ghcr.io 
+        
     - name: Build the Docker image
       run: |
         docker build -t ghcr.io/${{ github.repository }}/shop-backend:latest .  

@@ -8,7 +8,7 @@ services:
     ports:
       - "8080:8080"  # Expose app on port 8080
     environment:
-      - DATABASE_URL=postgres://test:test@db:5432/shopdb  # Connection string for the database
+       CONFIG_FILE: "config/compose.yaml"
     depends_on:
       db:
         condition: service_healthy  # Wait for db to be healthy

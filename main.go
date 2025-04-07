@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"net/url"
 	"simplebank/pkg/api"
 	"simplebank/pkg/config"
@@ -15,7 +16,17 @@ import (
 )
 
 func main() {
-	config.LoadConfigs("config/default.yaml")
+
+	// Get the config file path from the environment variable
+	configFile := os.Getenv("CONFIG_FILE")
+
+	// If CONFIG_FILE is not set, use a default (fallback) value
+	if configFile == "" {
+		configFile = "config/default.yaml" // Fallback to default.yaml if not set
+	}
+	
+	// Load the configuration file
+	config.LoadConfigs(configFile)
 	cfg := config.GetConfigs()
 	dbstring := fmt.Sprintf("postgresql://%v:%v@%v/%v?sslmode=%v", cfg.Postgres.UserName, url.QueryEscape(cfg.Postgres.Password), cfg.Postgres.Host, cfg.Postgres.Database, cfg.Postgres.SSLmode)
 	dbConn, err := sql.Open("postgres", dbstring)

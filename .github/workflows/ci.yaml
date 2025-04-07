@@ -39,11 +39,12 @@ jobs:
         
     - name: Build the Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository }}/shop-backend:$TAG_NAME .  
+        docker build  --build-arg CONFIG_FILE=${{ env.CONFIG_FILE }}  -t ghcr.io/${{ github.repository }}/shop-backend:$TAG_NAME -t ghcr.io/${{ github.repository }}/shop-backend:latest   .  
       env:
         CONFIG_FILE: config/action.yaml   
 
     - name: Push the Docker image to GitHub Container Registry
       run: |
         docker push ghcr.io/${{ github.repository }}/shop-backend:$TAG_NAME 
+        docker push ghcr.io/${{ github.repository }}/shop-backend:latest
 

@@ -31,7 +31,7 @@ WORKDIR /root/
 COPY --from=builder /app/shop-backend .
 
 # Copy the configuration file
-COPY config/default.yaml /root/config/default.yaml 
+COPY config/ /root/config/ 
 COPY db/ /root/db/
 
 

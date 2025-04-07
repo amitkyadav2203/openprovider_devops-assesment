@@ -13,6 +13,16 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: shopdb
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U test" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
     - name: Checkout repository
@@ -21,16 +31,22 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.21.0'
+        go-version: '1.21'  # Specify the Go version you're using
 
     - name: Install dependencies
       run: |
-        go mod tidy  # Ensure all dependencies are installed
+        go mod tidy
 
     - name: Run unit tests
       run: |
-        go test -v -cover ./...  # Run the unit tests and show coverage
-
+        go test -v -cover ./...
+      env:
+        # Set environment variables for database connection
+        DB_HOST: postgres
+        DB_PORT: 5432
+        DB_USER: test
+        DB_PASSWORD: test
+        DB_NAME: shopdb
 
   # Job for Building and Pushing Docker Image
   build:

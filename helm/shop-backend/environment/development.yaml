@@ -1,0 +1,48 @@
+replicaCount: 5
+
+image:
+  repository: ghcr.io/amitkyadav2203/openprovider_devops-assesment/shop-backend
+  pullPolicy: IfNotPresent
+  tag: "d01d6"
+
+imagePullSecrets: []
+
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+resources: 
+  limits:
+    cpu: 200m
+    memory: 254Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+# nodeSelector: {}
+nodeSelector:
+  role: api
+
+tolerations: []
+
+# affinity: {}
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app
+              operator: In
+              values:
+                - shop-backend  # This will match the label applied to the pods
+        topologyKey: "kubernetes.io/hostname"  # Ensures only one pod is placed per node
+    
+
+autoscaling:
+  enabled: false
+  minReplicas: 5
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80

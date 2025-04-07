@@ -5,12 +5,37 @@ on:
     branches:
       - main  
       - ci_action
+      - ci-test
     tags:
       - 'v*' 
 
 jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.21.0'
+
+    - name: Install dependencies
+      run: |
+        go mod tidy  # Ensure all dependencies are installed
+
+    - name: Run unit tests
+      run: |
+        go test -v -cover ./...  # Run the unit tests and show coverage
+
+
+  # Job for Building and Pushing Docker Image
   build:
-    runs-on: ubuntu-latest  # The runner to execute the jobs (Ubuntu in this case)
+    runs-on: ubuntu-latest  
+    needs: test
     
     steps:
     - name: Checkout repository
